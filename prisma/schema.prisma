@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  email String @unique
+  password String
+  isAdmin Boolean @default(false) @map("is_admin")
+
+  name String 
+  avatarPath String @default("/uploads/default-avatar.png") @map("avatar_path")
+  phone String @default("")
+
+  orders Order[]
+  reviews Review[]
+  favorites Book[]
+}
+
+model Book {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+  description String
+  price Int
+  images String[]
+
+  isAudioAvailable Boolean @default(false)
+  audioUrl String @default("") @map("audio_url")
+
+  author Author? @relation(fields: [authorId], references: [id])
+  authorId Int? @map("author_id")
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int? @map("category_id")
+
+  reviews Review[]
+
+  orderItems OrderItem[] 
+  
+  user User? @relation(fields: [userId], references: [id])
+  userId Int? @map("user_id")
+}
+
+model Author {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fullName String @unique @map("full_name")
+  slug String @unique
+  avatarPath String @default("/uploads/default-avatar.png") @map("avatar_path")
+
+  books Book[]
+}
+
+enum EnumOrderStatus {
+  PENDING
+  PAYED
+  SHIPPED
+  DELIVERED
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  status EnumOrderStatus @default(PENDING)
+  total Int 
+
+  items OrderItem[]
+
+  user User? @relation(fields: [userId], references: [id])
+  userId Int? @map("user_id")
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  quantity Int
+  price Int
+
+  order Order? @relation(fields: [orderId], references: [id])
+  orderId Int? @map("order_id")
+
+  product Book? @relation(fields: [productId], references: [id])
+  productId Int? @map("product_id")
+
+  @@map("Order_item")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  books Book[]
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rating Int
+  text String
+
+  user User? @relation(fields: [userId], references: [id])
+  userId Int? @map("user_id") 
+
+  book Book? @relation(fields: [bookId], references: [id])
+  bookId Int? @map("book_id") 
+}
