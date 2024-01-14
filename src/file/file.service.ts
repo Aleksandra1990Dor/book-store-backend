@@ -7,7 +7,7 @@ import { path } from 'app-root-path'
 export class FileService {
 	async saveFiles(
 		files: Express.Multer.File[],
-		folder: string
+		folder: string = 'default'
 	): Promise<FileResponse[]> {
 		const uploadFolder = `${path}/uploads/${folder}`
 
