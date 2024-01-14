@@ -44,7 +44,6 @@ export class OrderService {
 
 		const order = await this.prisma.order.create({
 			data: {
-				status: dto.status,
 				total: totalAmount,
 				user: { connect: { id: userId } },
 				items: {
