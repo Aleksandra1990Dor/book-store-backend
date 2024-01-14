@@ -1,12 +1,5 @@
-import { EnumOrderStatus } from '@prisma/client'
 import { Type } from 'class-transformer'
-import {
-	IsEnum,
-	IsNumber,
-	IsArray,
-	ValidateNested,
-	IsOptional
-} from 'class-validator'
+import { IsNumber, IsArray, ValidateNested } from 'class-validator'
 
 export class OrderItemDto {
 	@IsNumber()
@@ -20,13 +13,6 @@ export class OrderItemDto {
 }
 
 export class OrderDto {
-	@IsOptional()
-	@IsEnum(EnumOrderStatus)
-	status?: EnumOrderStatus
-
-	@IsNumber()
-	price: number
-
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => OrderItemDto)
